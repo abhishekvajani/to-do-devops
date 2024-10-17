@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"  # Update to your region
+  region = "us-west-2" # Update to your region
 }
 
 # Create IAM role for the Jenkins server
@@ -41,21 +41,21 @@ resource "aws_security_group" "jenkins_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH from anywhere
+    cidr_blocks = ["0.0.0.0/0"] # Allow SSH from anywhere
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow Jenkins access
+    cidr_blocks = ["0.0.0.0/0"] # Allow Jenkins access
   }
 
   ingress {
     from_port   = 50000
     to_port     = 50000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Jenkins agent port
+    cidr_blocks = ["0.0.0.0/0"] # Jenkins agent port
   }
 
   egress {
@@ -67,9 +67,9 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-0c65913e98a358f43"  
-  instance_type = "t2.medium"
-  key_name      = "devopsfinal"
+  ami           = "ami-07dcfc8123b5479a8"
+  instance_type = "t4g.medium"
+  key_name      = "devops3"
 
   tags = {
     Name = "Jenkins-Server"
@@ -84,15 +84,17 @@ resource "aws_instance" "jenkins_server" {
   # Define user data for installing Docker and Jenkins automatically
   user_data = <<-EOF
       #!/bin/bash
-      sudo apt update -y
-      sudo apt install -y docker.io docker-compose
-      sudo systemctl start docker
-      sudo usermod -aG docker ubuntu
+      set -e  # Exit immediately if a command exits with a non-zero status
+      sleep 30  # Delay to ensure the instance is fully initialized
 
-      # Pull Jenkins image
-      docker pull jenkins/jenkins:lts
+      # Update and install Docker and Docker Compose
+      sudo yum update -y && \
+      sudo amazon-linux-extras install docker -y && \
+      sudo systemctl start docker && \
+      sudo usermod -aG docker ec2-user
 
-      # Run Jenkins container
+      # Pull Jenkins image and run the container
+      docker pull jenkins/jenkins:lts && \
       docker run -d -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts
   EOF
 }
