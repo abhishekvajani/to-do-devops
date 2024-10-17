@@ -1,0 +1,104 @@
+provider "aws" {
+  region = "us-west-2"  # Update to your region
+}
+
+# Create IAM role for the Jenkins server
+resource "aws_iam_role" "jenkins_role" {
+  name = "jenkins_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+# Attach policies to the IAM role (customize as needed)
+resource "aws_iam_role_policy_attachment" "s3_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  role       = aws_iam_role.jenkins_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  role       = aws_iam_role.jenkins_role.name
+}
+
+resource "aws_security_group" "jenkins_sg" {
+  name        = "jenkins-sg"
+  description = "Allow access to Jenkins, Docker, and SSH"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH from anywhere
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow Jenkins access
+  }
+
+  ingress {
+    from_port   = 50000
+    to_port     = 50000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Jenkins agent port
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "jenkins_server" {
+  ami           = "ami-0c65913e98a358f43"  
+  instance_type = "t2.medium"
+  key_name      = "devopsfinal"
+
+  tags = {
+    Name = "Jenkins-Server"
+  }
+
+  # Use security group for allowing Jenkins, Docker, and SSH traffic
+  security_groups = [aws_security_group.jenkins_sg.name]
+
+  # Attach the IAM role to the EC2 instance
+  iam_instance_profile = aws_iam_instance_profile.jenkins_instance_profile.name
+
+  # Define user data for installing Docker and Jenkins automatically
+  user_data = <<-EOF
+      #!/bin/bash
+      sudo apt update -y
+      sudo apt install -y docker.io docker-compose
+      sudo systemctl start docker
+      sudo usermod -aG docker ubuntu
+
+      # Pull Jenkins image
+      docker pull jenkins/jenkins:lts
+
+      # Run Jenkins container
+      docker run -d -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts
+  EOF
+}
+
+# Create an instance profile for the Jenkins role
+resource "aws_iam_instance_profile" "jenkins_instance_profile" {
+  name = "jenkins_instance_profile"
+  role = aws_iam_role.jenkins_role.name
+}
