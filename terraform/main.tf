@@ -67,9 +67,9 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-07dcfc8123b5479a8"  # Use a valid AMI ID for your region
+  ami           = "ami-07dcfc8123b5479a8" # Use a valid AMI ID for your region
   instance_type = "t4g.medium"
-  key_name      = "devops3"                # Update with your key name
+  key_name      = "devops3" # Update with your key name
 
   tags = {
     Name = "Jenkins-Server"
