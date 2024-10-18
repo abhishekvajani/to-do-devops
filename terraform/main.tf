@@ -45,8 +45,8 @@ resource "aws_security_group" "jenkins_sg" {
   }
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 8081
+    to_port     = 8081
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Allow Jenkins access
   }
@@ -67,9 +67,9 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-07dcfc8123b5479a8"
+  ami           = "ami-07dcfc8123b5479a8"  # Use a valid AMI ID for your region
   instance_type = "t4g.medium"
-  key_name      = "devops3"
+  key_name      = "devops3"                # Update with your key name
 
   tags = {
     Name = "Jenkins-Server"
@@ -87,7 +87,7 @@ resource "aws_instance" "jenkins_server" {
       set -e  # Exit immediately if a command exits with a non-zero status
       sleep 30  # Delay to ensure the instance is fully initialized
 
-      # Update and install Docker and Docker Compose
+      # Update and install Docker
       sudo yum update -y && \
       sudo yum install docker -y && \
       sudo service docker start && \
@@ -95,9 +95,9 @@ resource "aws_instance" "jenkins_server" {
 
       # Pull Jenkins image and run the container
       sudo docker pull jenkins/jenkins:lts && \
-      sudo docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
-  EOF
+      sudo docker run -d --name jenkins -p 8081:8080 -p 50000:50000 \
+      -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+  EOF
 }
 
 # Create an instance profile for the Jenkins role
