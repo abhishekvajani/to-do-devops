@@ -92,11 +92,10 @@ resource "aws_instance" "jenkins_server" {
   iam_instance_profile = aws_iam_instance_profile.jenkins_instance_profile.name
 
   # Define user data for installing Docker and Jenkins automatically
-  # Define user data for installing Docker and Jenkins automatically
   user_data = <<-EOF
       #!/bin/bash
       set -e  # Exit immediately if a command exits with a non-zero status
-      sleep 30  # Delay to ensure the instance is fully initialized
+      sleep 60  # Delay to ensure the instance is fully initialized
 
       # Update packages
       sudo apt-get update -y
@@ -106,6 +105,9 @@ resource "aws_instance" "jenkins_server" {
       sudo systemctl start docker
       sudo systemctl enable docker
 
+      # Add the ubuntu user to the docker group (if needed)
+      sudo usermod -aG docker ubuntu
+
       # Pull the Jenkins image from Docker Hub
       sudo docker pull jenkins/jenkins:lts
 
@@ -114,11 +116,11 @@ resource "aws_instance" "jenkins_server" {
 
       # Run Jenkins in a Docker container
       sudo docker run -d --name jenkins \
-    -p 8080:8080 -p 50000:50000 \
-    -v jenkins_home:/var/jenkins_home \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    jenkins/jenkins:lts
-  EOF
+        -p 8080:8080 -p 50000:50000 \
+        -v jenkins_home:/var/jenkins_home \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        jenkins/jenkins:lts
+EOF
 }
 
 # Create an instance profile for the Jenkins role
