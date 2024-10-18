@@ -86,7 +86,6 @@ pipeline {
                         sh 'export KUBECONFIG=${KUBECONFIG_FILE}'
                         sh 'export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}'
                         sh 'export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}'
-                        sh "sed -i 's|image: .*|image: ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}|g' deployment.yml"
                         sh 'kubectl apply -f deployment.yml'
                         sh 'kubectl apply -f service.yml'
                     }
