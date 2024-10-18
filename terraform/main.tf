@@ -77,7 +77,7 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-0dc717678e84b5435" # Ubuntu 20.04 AMI ID (us-west-2)
+  ami           = "ami-042e8287309f5df03" # Ubuntu 20.04 AMI ID (us-west-2)
   instance_type = "t3.medium"
   key_name      = "devops3" # Update with your key name
 
