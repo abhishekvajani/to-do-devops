@@ -45,18 +45,18 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        run: terraform init -chdir=terraform
+        run: terraform init
 
       - name: Terraform plan
         working-directory: ./terraform
-        run: terraform plan -chdir=terraform
+        run: terraform plan 
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform apply
         working-directory: ./terraform
-        run: terraform apply -chdir=terraform
+        run: terraform apply 
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
