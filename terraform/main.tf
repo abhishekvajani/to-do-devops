@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2" # Update to your region
+  region = "us-west-2"
 }
 
 # Create IAM role for the Jenkins server
@@ -67,8 +67,8 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-07dcfc8123b5479a8" # Use a valid AMI ID for your region
-  instance_type = "t4g.medium"
+  ami           = "ami-08c40ec9ead489470" # Ubuntu 20.04 AMI ID (us-west-2)
+  instance_type = "t3.medium"
   key_name      = "devops3" # Update with your key name
 
   tags = {
@@ -87,16 +87,29 @@ resource "aws_instance" "jenkins_server" {
       set -e  # Exit immediately if a command exits with a non-zero status
       sleep 30  # Delay to ensure the instance is fully initialized
 
-      # Update and install Docker
-      sudo yum update -y && \
-      sudo yum install docker -y && \
-      sudo service docker start && \
+      # Update packages
+      sudo apt-get update -y
+
+      # Install Docker
+      sudo apt-get install -y docker.io
+      sudo systemctl start docker
       sudo systemctl enable docker
 
-      # Pull Jenkins image and run the container
-      sudo docker pull jenkins/jenkins:lts && \
-      sudo docker run -d --name jenkins -p 8081:8080 -p 50000:50000 \
-      -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+      # Install Jenkins dependencies and add Jenkins repository
+      sudo apt-get install -y openjdk-11-jdk
+      curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+        /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+      echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+        https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+        /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+      # Install Jenkins
+      sudo apt-get update -y
+      sudo apt-get install -y jenkins
+
+      # Start Jenkins service
+      sudo systemctl start jenkins
+      sudo systemctl enable jenkins
   EOF
 }
 
