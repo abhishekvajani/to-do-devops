@@ -2,16 +2,26 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-creds' // Jenkins credentials ID for Docker Hub
-        DOCKER_IMAGE_NAME = 'abhivajani/todo-app1' // Change this to your Docker Hub username and app name
-        DOCKER_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}" // Tag image with branch name and build number
-        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-creds' // Jenkins credentials ID for Kubeconfig
+        DOCKER_CREDENTIALS_ID = 'dockerhub-creds'
+        DOCKER_IMAGE_NAME = 'abhivajani/todo-app1'
+        DOCKER_TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-creds'
+        AWS_CREDENTIALS_ID = 'aws-credentials'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm // Checkout code from the repository
+                checkout scm
+            }
+        }
+
+        stage('Check Docker Status') {
+            steps {
+                script {
+                    // This will check if Docker is running and accessible
+                    sh 'docker ps' // List running Docker containers
+                }
             }
         }
 
@@ -38,14 +48,12 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    // Set kubeconfig for the EKS cluster
-                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG_FILE')]) {
+                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG_FILE'),
+                                     usernamePassword(credentialsId: AWS_CREDENTIALS_ID, passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         sh 'export KUBECONFIG=${KUBECONFIG_FILE}'
-
-                        // Update deployment.yml with the new image
+                        sh 'export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}'
+                        sh 'export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}'
                         sh "sed -i 's|image: .*|image: ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}|g' deployment.yml"
-
-                        // Apply the Kubernetes manifests
                         sh 'kubectl apply -f deployment.yml'
                         sh 'kubectl apply -f service.yml'
                     }
