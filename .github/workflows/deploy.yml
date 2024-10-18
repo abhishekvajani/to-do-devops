@@ -14,21 +14,21 @@ jobs:
   permissions:
     contents: write
   steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Format code with Prettier
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/app -w /app node:alpine npx prettier --write "*.{js,css,html}"
+    - name: Format code with Prettier
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/app -w /app node:alpine npx prettier --write "*.{js,css,html}"
 
-      - name: Commit formatted code
-        run: |
-          git config --local user.name "GitHub Actions"
-          git config --local user.email "actions@github.com"
-          git add .
-          git commit -m "Auto-format code with Prettier" || echo "No changes to commit"
-          git push
-        if: github.event_name == 'push'  # Only commit on push events
+    - name: Commit formatted code
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
+        git add .
+        git commit -m "Auto-format code with Prettier" || echo "No changes to commit"
+        git push
+      if: github.event_name == 'push'  # Only commit on push events
 
   terraform:
     runs-on: ubuntu-latest
