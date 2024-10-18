@@ -61,13 +61,16 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    def image = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    // Log in to Docker Hub using the provided credentials
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        sh "docker push ${image}"
+                        // Push the image to Docker Hub
+                        echo "Pushing image to Docker Hub: ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                        sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     }
                 }
             }
-        }
+        }
+
 
         stage('Deploy to EKS') {
             steps {
