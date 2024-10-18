@@ -2,5 +2,5 @@
 .dist/
 .packages/
 .DS_Store
-# .terraform/
+.terraform/
 terraform/.terraform.lock.hcl
