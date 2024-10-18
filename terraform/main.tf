@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"  # Update to your region
+  region = "us-west-2" # Update to your region
 }
 
 # Create IAM role for the Jenkins server
@@ -41,21 +41,21 @@ resource "aws_security_group" "jenkins_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH from anywhere
+    cidr_blocks = ["0.0.0.0/0"] # Allow SSH from anywhere
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow Jenkins access
+    cidr_blocks = ["0.0.0.0/0"] # Allow Jenkins access
   }
 
   ingress {
     from_port   = 50000
     to_port     = 50000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Jenkins agent port
+    cidr_blocks = ["0.0.0.0/0"] # Jenkins agent port
   }
 
   egress {
@@ -67,7 +67,7 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-07dcfc8123b5479a8" 
+  ami           = "ami-07dcfc8123b5479a8"
   instance_type = "t4g.medium"
   key_name      = "devops3"
 
@@ -82,7 +82,7 @@ resource "aws_instance" "jenkins_server" {
   iam_instance_profile = aws_iam_instance_profile.jenkins_instance_profile.name
 
   # Define user data for installing Docker and Jenkins automatically
- user_data = <<-EOF
+  user_data = <<-EOF
       #!/bin/bash
       set -e  # Exit immediately if a command exits with a non-zero status
       sleep 30  # Delay to ensure the instance is fully initialized
