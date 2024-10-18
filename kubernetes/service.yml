@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: todo-app
 spec:
-  type: LoadBalancer  # Change to NodePort if you don't have a cloud provider
+  type: LoadBalancer  # This type exposes the service externally
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 80        # Port that the service will expose
+      targetPort: 80  # Port on the container that the service forwards to
   selector:
-    app: todo-app
+    app: todo-app  # Must match the labels defined in the deployment
