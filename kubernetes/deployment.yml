@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: abhivajani/todo-app1:latest  # Your Docker Hub image
+          image: abhivajani/jenkins-image:latest  # Your Docker Hub image
           ports:
             - containerPort: 80  # The port exposed by the container
