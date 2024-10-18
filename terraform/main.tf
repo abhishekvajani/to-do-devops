@@ -92,6 +92,7 @@ resource "aws_instance" "jenkins_server" {
   iam_instance_profile = aws_iam_instance_profile.jenkins_instance_profile.name
 
   # Define user data for installing Docker and Jenkins automatically
+  # Define user data for installing Docker and Jenkins automatically
   user_data = <<-EOF
       #!/bin/bash
       set -e  # Exit immediately if a command exits with a non-zero status
@@ -100,26 +101,32 @@ resource "aws_instance" "jenkins_server" {
       # Update packages
       sudo apt-get update -y
 
+      # Install necessary dependencies
+      sudo apt-get install -y wget gnupg
+
       # Install Docker
       sudo apt-get install -y docker.io
       sudo systemctl start docker
       sudo systemctl enable docker
 
-      # Install Jenkins dependencies and add Jenkins repository
+      # Install Jenkins dependencies
       sudo apt-get install -y openjdk-11-jdk
-      curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
-        /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-      echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-        https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-        /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+      # Add Jenkins GPG key
+      wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+
+      # Add Jenkins repository
+      echo "deb http://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list
+
+      # Update package lists again
+      sudo apt-get update -y
 
       # Install Jenkins
-      sudo apt-get update -y
       sudo apt-get install -y jenkins
 
       # Start Jenkins service
       sudo systemctl start jenkins
-      sudo systemctl enable jenkins
+      sudo systemctl enable jenkins
   EOF
 }
 
