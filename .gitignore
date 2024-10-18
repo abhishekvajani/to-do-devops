@@ -1,2 +1,2 @@
-.terraform/
-infra/.terraform.lock.hcl
+terraform/.terraform/
+terraform/.terraform.lock.hcl
