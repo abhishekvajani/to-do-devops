@@ -60,15 +60,21 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    // Log in to Docker Hub using the provided credentials
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                        // Push the image to Docker Hub
-                        echo "Pushing image to Docker Hub: ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                        sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                    }
-                }
-            }
+        script {
+            // Define your Docker Hub credentials directly
+            def dockerHubUsername = 'abhivajani'  // Replace with your Docker Hub username
+            def dockerHubPassword = 'avajani@22'  // Replace with your Docker Hub password
+
+            def image = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+
+            // Log in to Docker Hub
+            sh "echo ${dockerHubPassword} | docker login -u ${dockerHubUsername} --password-stdin"
+
+            // Push the Docker image
+            sh "docker push ${dockerHubUsername}/${image}"
+        }
+    }
+
         }
 
         stage('Deploy to EKS') {
