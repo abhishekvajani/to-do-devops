@@ -25,7 +25,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git add .
           git commit -m "Auto-format code with Prettier" || echo "No changes to commit"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/abhishekvajani/to-do-devops.git HEAD:main
+          git push https://${{ secrets.MYGITHUB_TOKEN }}@github.com/abhishekvajani/to-do-devops.git HEAD:main
         if: github.event_name == 'push'  # Only commit on push events
 
   terraform:
