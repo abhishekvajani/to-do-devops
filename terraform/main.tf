@@ -93,7 +93,7 @@ resource "aws_instance" "jenkins_server" {
 
   # Define user data for installing Docker and Jenkins automatically
   # Define user data for installing Docker and Jenkins automatically
-  user_data = <<-EOF
+    user_data = <<-EOF
       #!/bin/bash
       set -e  # Exit immediately if a command exits with a non-zero status
       sleep 30  # Delay to ensure the instance is fully initialized
@@ -101,32 +101,22 @@ resource "aws_instance" "jenkins_server" {
       # Update packages
       sudo apt-get update -y
 
-      # Install necessary dependencies
-      sudo apt-get install -y wget gnupg
-
       # Install Docker
       sudo apt-get install -y docker.io
       sudo systemctl start docker
       sudo systemctl enable docker
 
-      # Install Jenkins dependencies
-      sudo apt-get install -y openjdk-11-jdk
+      # Pull the Jenkins image from Docker Hub
+      sudo docker pull jenkins/jenkins:lts
 
-      # Add Jenkins GPG key
-      wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+      # Create a Docker volume for Jenkins data
+      sudo docker volume create jenkins_home
 
-      # Add Jenkins repository
-      echo "deb http://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list
-
-      # Update package lists again
-      sudo apt-get update -y
-
-      # Install Jenkins
-      sudo apt-get install -y jenkins
-
-      # Start Jenkins service
-      sudo systemctl start jenkins
-      sudo systemctl enable jenkins
+      # Run Jenkins in a Docker container
+      sudo docker run -d --name jenkins \
+          -p 8080:8080 -p 50000:50000 \
+          -v jenkins_home:/var/jenkins_home \
+          jenkins/jenkins:lts
   EOF
 }
 
