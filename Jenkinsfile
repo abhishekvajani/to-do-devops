@@ -71,7 +71,8 @@ pipeline {
             sh "echo ${dockerHubPassword} | docker login -u ${dockerHubUsername} --password-stdin"
 
             // Push the Docker image
-            sh "docker push ${dockerHubUsername}/${image}"
+            sh "docker push ${image}"
+
         }
     }
 
