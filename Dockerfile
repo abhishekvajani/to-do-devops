@@ -1,13 +1,15 @@
-# Use the official Nginx image as the base
+# Use the official Nginx image to serve the static files
 FROM nginx:alpine
 
-# Remove the default Nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# Set the working directory inside the container
+WORKDIR /usr/share/nginx/html
 
-# Copy your static files (app.js, index.html, and any other assets) to the Nginx HTML directory
-COPY . /usr/share/nginx/html
+# Copy the HTML, CSS, and JavaScript files to the Nginx directory
+COPY index.html .
+COPY app.js .
+COPY style.css .
 
-# Expose port 80 (the default Nginx port)
+# Expose port 80 to the outside world
 EXPOSE 80
 
 # Start Nginx server
