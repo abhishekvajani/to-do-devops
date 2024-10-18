@@ -93,7 +93,7 @@ resource "aws_instance" "jenkins_server" {
 
   # Define user data for installing Docker and Jenkins automatically
   # Define user data for installing Docker and Jenkins automatically
-    user_data = <<-EOF
+  user_data = <<-EOF
       #!/bin/bash
       set -e  # Exit immediately if a command exits with a non-zero status
       sleep 30  # Delay to ensure the instance is fully initialized
