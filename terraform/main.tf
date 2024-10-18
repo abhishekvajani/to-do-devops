@@ -34,7 +34,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2RoleforSSM"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.jenkins_role.name
 }
 
@@ -77,7 +77,7 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami           = "ami-08c40ec9ead489470" # Ubuntu 20.04 AMI ID (us-west-2)
+  ami           = "ami-024437e14746c4dcb" # Ubuntu 20.04 AMI ID (us-west-2)
   instance_type = "t3.medium"
   key_name      = "devops3" # Update with your key name
 
