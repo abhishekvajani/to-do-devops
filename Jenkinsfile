@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'dockerhub-creds'
         DOCKER_IMAGE_NAME = 'abhivajani/jenkins-image'
         DOCKER_TAG = 'latest'
-        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig-creds'
+        KUBECONFIG_CREDENTIALS_ID = 'kuberconfig-creds'
         AWS_CREDENTIALS_ID = 'aws-credentials'
     }
 
