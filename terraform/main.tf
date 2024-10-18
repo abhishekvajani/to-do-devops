@@ -33,6 +33,16 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_policy" {
   role       = aws_iam_role.jenkins_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2RoleforSSM"
+  role       = aws_iam_role.jenkins_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "ec2_full_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+  role       = aws_iam_role.jenkins_role.name
+}
+
 resource "aws_security_group" "jenkins_sg" {
   name        = "jenkins-sg"
   description = "Allow access to Jenkins, Docker, and SSH"
