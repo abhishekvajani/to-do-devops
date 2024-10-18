@@ -40,18 +40,22 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform fmt
+        working-directory: ./terraform
         run: terraform fmt -check
 
       - name: Terraform init
+        working-directory: ./terraform
         run: terraform init -chdir=terraform
 
       - name: Terraform plan
+        working-directory: ./terraform
         run: terraform plan -chdir=terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform apply
+        working-directory: ./terraform
         run: terraform apply -chdir=terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
