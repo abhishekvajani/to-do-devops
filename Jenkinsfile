@@ -86,6 +86,7 @@ pipeline {
                         sh 'export KUBECONFIG=${KUBECONFIG_FILE}'
                         sh 'export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}'
                         sh 'export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}'
+                        sh "aws eks update-kubeconfig --name devopsekscluster1 --region us-west-2"
                         sh 'kubectl apply -f kubernetes/deployment.yml'
                         sh 'kubectl apply -f kubernetes/service.yml'
                     }
