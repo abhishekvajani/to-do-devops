@@ -90,7 +90,7 @@ pipeline {
                         sh 'cat /var/lib/jenkins/.kube/config'
                         sh "sudo sed -i 's/v1alpha1/v1beta1/g' /var/lib/jenkins/.kube/config"
                         sh 'cat /var/lib/jenkins/.kube/config | grep apiVersion'
-                        sh 'kubectl apply -f kubernetes/deployment.yml'
+                        sh 'kubectl apply -f kubernetes/deployment.yml --validate=false'
                         sh 'kubectl apply -f kubernetes/service.yml'
                     }
                 }
