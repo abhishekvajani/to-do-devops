@@ -86,8 +86,6 @@ pipeline {
                         sh 'export KUBECONFIG=${KUBECONFIG_FILE}'
                         sh 'export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}'
                         sh 'export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}'
-                        sh 'aws eks update-kubeconfig --name devopsekscluster1 --region us-west-2'
-                        sh 'cat /var/lib/jenkins/.kube/config'
                         sh "sudo sed -i 's/v1alpha1/v1beta1/g' /var/lib/jenkins/.kube/config"
                         sh 'cat /var/lib/jenkins/.kube/config | grep apiVersion'
                         sh 'kubectl apply -f kubernetes/deployment.yml --validate=false'
